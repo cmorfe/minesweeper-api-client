@@ -9,16 +9,25 @@ const client = axios.create({
   }
 })
 
-const request = ({ method = 'GET', url, token = '', data = {} }) =>
-  client
-    .request({ method, url, headers: { Authorization: `Bearer ${token}` }, data })
-    .then(response => ({ data: response.data.data }))
-    .catch(error => ({ error: error.response.data.message }))
+const request = ({ method = 'GET', url, token = '', data = {} }) => client
+  .request({ method, url, headers: { Authorization: `Bearer ${token}` }, data })
+  .then(response => {
+    let data = response.data
 
-const get = ({ url, token }) => request({ url, token })
+    return data.data
+      ? { data: data.data }
+      : { message: data.message}
+  })
+  .catch(error => {
+    let data = error.response.data
 
-const post = ({ url, token, data }) => request({ method: 'POST', url, token, data })
+    return data.errors
+      ? { errors: data.errors, message: data.message }
+      : { message: data.message }
+  })
 
-const put = ({ url, token, data }) => request({ method: 'PUT', url, token, data })
+export const get = ({ url, token }) => request({ url, token })
 
-export default { get, post, put }
+export const post = ({ url, token, data }) => request({ method: 'POST', url, token, data })
+
+export const put = ({ url, token, data }) => request({ method: 'PUT', url, token, data })
