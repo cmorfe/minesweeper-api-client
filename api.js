@@ -1,30 +1,25 @@
 import axios from 'axios'
-import { API_URL } from './constants'
+import { API_URL } from './constants.js'
 
-const client = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json'
-  }
-})
+const client = axios
+  .create({
+    baseURL: API_URL,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    }
+  })
 
 const request = ({ method = 'GET', url, token = '', data = {} }) => client
   .request({ method, url, headers: { Authorization: `Bearer ${token}` }, data })
-  .then(response => {
-    let data = response.data
-
-    return data.data
-      ? { data: data.data }
-      : { message: data.message}
-  })
-  .catch(error => {
-    let data = error.response.data
-
-    return data.errors
-      ? { errors: data.errors, message: data.message }
-      : { message: data.message }
-  })
+  .then(response => response.data)
+  .then(response => response.data
+    ? { data: response.data }
+    : { message: response.message })
+  .catch(error =>
+    error.response.data.errors
+      ? { message: error.response.data.message, errors: error.response.data.errors }
+      : { message: error.response.data.message })
 
 export const get = ({ url, token }) => request({ url, token })
 
