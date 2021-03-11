@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { API_URL } from './constants.js'
+import { API_URL } from './constants'
 
 const client = axios
   .create({
@@ -14,7 +14,7 @@ const request = ({ method = 'GET', url, token = '', data = {} }) => client
   .request({ method, url, headers: { Authorization: `Bearer ${token}` }, data })
   .then(response => response.data)
   .then(response => response.data
-    ? { data: response.data }
+    ? { data: response.data, message: response.message }
     : { message: response.message })
   .catch(error =>
     error.response.data.errors
